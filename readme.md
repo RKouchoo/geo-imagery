@@ -6,7 +6,7 @@ This is a tool to download the raw data uploaded to amazon S3  and create ultra 
 ## Supported Satellites
 - Japan: Himawari 9 
 - USA: GOES 16 17 19
-- Korean: GeoKompsat 2a (GK-2A)
+- South Korea: GeoKompsat 2a (GK-2A)
 
 
 ## Requirements
@@ -20,6 +20,7 @@ This is a tool to download the raw data uploaded to amazon S3  and create ultra 
 ## Todo:
 
 - Finish HDF file handling with correct timestamps
+- Add HRIT file handling for non HDF satellites
 - Add other satellites and required containers 
-- Convert satellite type classes into DB's or JSON types
+- Convert satellite type classes into DB's or JSON objects
 - Create a UI 
