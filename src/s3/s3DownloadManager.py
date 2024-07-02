@@ -128,9 +128,9 @@ def doDownloadExtract(gzpath, datpath, files):
         gzFile = bz2.BZ2File(thePath)
         gzData = gzFile.read()
         gzs = gzf.split("/")
-        gzn = gzs[len(gzs) - 1]
-        open(datpath + gzn[:-4], "wb").write(gzData)
-        print("Wrote DAT file: {}".format(datpath + gzf[8:-4]))
+        gzn = gzs[len(gzs) - 1][:-4]
+        open(datpath + gzn, "wb").write(gzData)
+        print("Wrote DAT file: {}".format(datpath + gzn))
 
    return newpath
 
