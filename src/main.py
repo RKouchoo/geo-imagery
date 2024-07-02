@@ -16,9 +16,9 @@ from sats import satellites
 
 himawarisat = satellites.HIMAWARI_9
 attribs = himawarisat.getAttributes()
-uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK)
+uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK) # type: ignore
 #ags = s3DownloadManager.getLatestDataFromS3("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/1040/", saTime=s3DateCarrier.carrier("2024", "07", "02", "1040"), satellite=himawarisat)
-ags = s3DownloadManager.getLatestDataFromS3(uri[0], uri[1], satellite=himawarisat)
+ags = s3DownloadManager.getLatestDataFromS3(uri[0], uri[1], satellite=himawarisat) # type: ignore
 
 '''
     filenamez = glob.glob("glob/decom/*.DAT")

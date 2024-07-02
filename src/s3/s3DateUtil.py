@@ -20,7 +20,7 @@ def getHimawariLatestDate(clampWindow, timestep=10):
     else:
         hours = firstHours + str(currentMins)
     
-    return s3DateCarrier.carrier(year, month, day, hours)
+    return s3DateCarrier.carrier(year, month, day, hours, True)
 
 
 
@@ -41,7 +41,7 @@ def jumpBack(currentCarrier):
     day = confine(day)
     hours = confine(hours)
 
-    return s3DateCarrier.carrier(year, month, day, hours)
+    return s3DateCarrier.carrier(year, month, day, hours, False)
 
 
 

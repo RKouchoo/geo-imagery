@@ -7,16 +7,18 @@ class carrier:
     month = 0
     day = 0
     time = 0
+    generated = False
     date = [year, month, day, time]
 
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
 
-    def __init__(self, year, month, day, time): 
+    def __init__(self, year, month, day, time, generated): 
         self.year = year
         self.month = month
         self.day = day
         self.time = time
+        self.generated = generated
         self.date = [year, month, day, time]
         return None
 
@@ -35,6 +37,9 @@ class carrier:
         
     def getDateArray(self):
         return self.date
+    
+    def getIsGenerated(self):
+        return self.generated
 
     def getCompleteDateString(self):
         return self.year + self.month + self.day + self.time
