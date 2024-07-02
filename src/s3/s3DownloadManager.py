@@ -127,7 +127,6 @@ def doDownloadExtract(gzpath, datpath, files):
    for gzf in files:
         fs.download(gzf, gzpath+gzf[-47:])
         thePath = gzpath+gzf[-47:]
-        newpath.append(thePath)
         print("Downloaded s3 raw: {}".format(gzf))
 
         gzFile = bz2.BZ2File(thePath)
@@ -135,6 +134,7 @@ def doDownloadExtract(gzpath, datpath, files):
         gzs = gzf.split("/")
         gzn = gzs[len(gzs) - 1][:-4]
         open(datpath + gzn, "wb").write(gzData)
+        newpath.append(datpath + gzn)
         print("Wrote DAT file: {}".format(datpath + gzn))
 
    return newpath

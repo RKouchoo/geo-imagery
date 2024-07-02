@@ -19,3 +19,5 @@ sats/__pycache__/
 *.py[cod]
 
 data/
+
+*.png
