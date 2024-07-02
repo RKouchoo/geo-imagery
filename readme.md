@@ -16,6 +16,7 @@ This is a tool to download the raw data uploaded to amazon S3  and create ultra 
     glob
     s3fs
     bz2
+    rioxarray
 
 ## Todo:
 

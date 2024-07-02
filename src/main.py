@@ -17,6 +17,8 @@ attribs = himawarisat.getAttributes()
 #ags = s3DownloadManager.getLatestDataFromS3("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/1040/", saTime=s3DateCarrier.carrier("2024", "07", "02", "1040", False), satellite=himawarisat)
 #ags = s3DownloadManager.getLatestDataFromS3(uri[0], uri[1], satellite=himawarisat) # type: ignore
 
+cloud = "geocolor_high_clouds"
+
 
 f = find_files_and_readers(base_dir="../data/processed/noaa-himawari9/202407021040/", reader='ahi_hsd')
 scene = Scene(filenames=f)
