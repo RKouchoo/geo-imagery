@@ -51,4 +51,4 @@ def confineMins(windowArray, inMins):
 
 
 def confineMinsPrevTen(minute):
-    return ((minute + 5) // 10) * 10 - 10
+    return max(0, ((minute + 5) // 10) * 10 - 10)

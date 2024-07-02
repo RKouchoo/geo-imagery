@@ -5,19 +5,20 @@ import glob
 
 from s3 import s3StringBuilder
 from s3 import s3DownloadManager
+from s3 import s3DateCarrier
 from sats import satellites
 
 # https://sites.google.com/view/raybellwaves/cheat-sheets/satpy
 # https://noaa-himawari9.s3.amazonaws.com/index.html#AHI-L1b-FLDK/2024/06/25/0820/
 # https://www.data.jma.go.jp/mscweb/en/himawari89/space_segment/spsg_ahi.html
 # https://www.data.jma.go.jp/mscweb/en/himawari89/himawari_cast/himawari_cast.php
-
 himawarisat = satellites.HIMAWARI_9
 attribs = himawarisat.getAttributes()
 
 uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK)
-#print(uri[0])
-s3DownloadManager.getLatestDataFromS3(uri[0], time=uri[1], satellite=himawarisat)
+s3DownloadManager.getLatestDataFromS3("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/0720/", saTime=s3DateCarrier.carrier("2024", "7", "2", "0720"), satellite=himawarisat)
+
+#s3DownloadManager.queryS3FilesCorrect("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/0630/", attribs.RAW_DATA_COUNT)
 
 #print(uri)
 #print(himawari(attribs.L1.ENCODER_TYPE))

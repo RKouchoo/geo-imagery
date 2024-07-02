@@ -1,4 +1,4 @@
-.vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -13,4 +13,9 @@
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+s3/__pycache__/
+sats/__pycache__/
+
 *.py[cod]
+
+data/*

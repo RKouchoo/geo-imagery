@@ -23,6 +23,7 @@ class attrib:
     S3_SOURCE_PATH = "noaa-goes-16"
     L1 = _goe_L1
     L2 = _goe_L2
+    RAW_DATA_COUNT = 160
 
 class satellite:
     def __new__(self, cls):

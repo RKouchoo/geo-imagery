@@ -40,4 +40,5 @@ class attrib(satellite):
     L2 = L2
     S3_SOURCE_PATH = "yourmum"
     TIME_SCALE = [0, 10, 20, 30, 40, 50]
+    RAW_DATA_COUNT = 160
 
