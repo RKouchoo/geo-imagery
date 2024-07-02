@@ -8,6 +8,10 @@ from sats import satellites
 from . import s3DateCarrier
 from . import s3DateUtil
 
+
+import concurrent.futures
+
+
 # lets init the s3 connector as we will need it while this class is alive
 fs = s3fs.S3FileSystem(anon=True)
 
@@ -32,24 +36,17 @@ def  getLatestDataFromS3(queryUrl,
     # lets generate the gz and dat path
     gzPath = "../data/gz/{}/{}/".format(attribs.S3_SOURCE_PATH, saTime.getCompleteDateString()) 
     datPath = "../data/processed/{}/{}/".format(attribs.S3_SOURCE_PATH, saTime.getCompleteDateString())
-   
-    # lets create/check for a folder with the UNC name for the files
-    if not os.path.exists(gzPath):
-        os.makedirs(gzPath)
-
-    if not os.path.exists(datPath):
-        os.makedirs(datPath)
 
     # lets check to see if the data is now there
     notValid = True
-    nov = 0
+    retryCount = 0
     while notValid:
-        nov += 1
+        retryCount += 1
         try:
             files = fs.ls(queryUrl, refresh=True)
             notValid = False
         except:
-            print("S3 Query is not ready! {} count: {}  ".format(queryUrl, nov))
+            print("S3 Query is not ready! {} count: {}".format(queryUrl, retryCount))
             time.sleep(5)
 
     # lets make sure all the data is there
@@ -59,22 +56,52 @@ def  getLatestDataFromS3(queryUrl,
         print("S3 file count for {} is {} of {}".format(queryUrl, len(files), attribs.RAW_DATA_COUNT))
         time.sleep(1)
     
+
+    # lets create/check for a folder with the UNC name for the files
+    if not os.path.exists(gzPath):
+        os.makedirs(gzPath)
+
+    if not os.path.exists(datPath):
+        os.makedirs(datPath)
+
+
     # now that all the checks are finally fucking done
     s3GZfiles = fs.ls(queryUrl, refresh=True)
-    
-    for gzf in s3GZfiles:
-        fs.download(gzf, gzPath+gzf[-47:])
+
+    # lets split all the files into 4 chunks for a 4 threadded download and extract
+    divCount = int(len(s3GZfiles) / 4)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        th1 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[:divCount])
+        th2 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[divCount:divCount*2])
+        th3 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[divCount*2:divCount*3])
+        th4 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[divCount*3:divCount*4])
+
+    # append all the paths into a single place 
+
+    gzfPaths = []
+    gzfPaths += th1.result() + th2.result() + th3.result() + th4.result() 
+
+
+# takes both paths and an array of files in s3
+# downloads then extracts the files 
+def threaddedDeX(gzpath, datpath, files):
+   newpath = []
+   
+   for gzf in files:
+        fs.download(gzf, gzpath+gzf[-47:])
+        thePath = gzpath+gzf[-47:]
+        newpath.append(thePath)
         print("Downloaded s3 raw: {}".format(gzf))
 
-    
-    # lets now extract the dat files from the bz files and put them in the correct folder
-    localGZFiles = glob.glob(gzPath +"*")
-    for gz in localGZFiles:
-        print(gz)
-        gzFile = bz2.BZ2File(gz)
+        gzFile = bz2.BZ2File(thePath)
         gzData = gzFile.read()
-        open(datPath + gz[8:-4], "wb").write(gzData)
-        print("Wrote dat file: {}".format(datPath + gz[8:-4]))
+        gzs = gzf.split("/")
+        gzn = gzs[len(gzs) - 1]
+        open(datpath + gzn[:-4], "wb").write(gzData)
+        print("Wrote DAT file: {}".format(datpath + gzf[8:-4]))
+
+   return newpath
 
 
 
@@ -98,12 +125,3 @@ def queryS3FilesCorrect(querypath, filecount):
             print("S3 path not ready!")
         
     return True
-
-
-
-
-
-
-'''
-
-'''

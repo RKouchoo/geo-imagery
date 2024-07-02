@@ -16,9 +16,9 @@ himawarisat = satellites.HIMAWARI_9
 attribs = himawarisat.getAttributes()
 
 uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK)
-s3DownloadManager.getLatestDataFromS3("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/0720/", saTime=s3DateCarrier.carrier("2024", "7", "2", "0720"), satellite=himawarisat)
+s3DownloadManager.getLatestDataFromS3("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/0900/", saTime=s3DateCarrier.carrier("2024", "07", "02", "0900"), satellite=himawarisat)
 
-#s3DownloadManager.queryS3FilesCorrect("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/0630/", attribs.RAW_DATA_COUNT)
+#s3DownloadManager.queryS3FilesCorrect("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/0900/", attribs.RAW_DATA_COUNT)
 
 #print(uri)
 #print(himawari(attribs.L1.ENCODER_TYPE))

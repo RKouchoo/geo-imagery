@@ -23,6 +23,28 @@ def getHimawariLatestDate(clampWindow, timestep=10):
     return s3DateCarrier.carrier(year, month, day, hours)
 
 
+
+# jump back to the previous timestamp if the current one is too far ahead
+def jumpBack(currentCarrier):
+
+    year = currentCarrier.getYear()
+    month = currentCarrier.getMonth()
+
+    day = int(currentCarrier.getDay())
+    hours = int(currentCarrier.getTime())
+
+    # check if its midnight, to go back further
+    if hours == 0:
+        hours = 50
+        day -= 1
+
+    day = confine(day)
+    hours = confine(hours)
+
+    return s3DateCarrier.carrier(year, month, day, hours)
+
+
+
 # confine values the himwari S3 UNC
 # converts "6" into "06"
 def confine(num):
