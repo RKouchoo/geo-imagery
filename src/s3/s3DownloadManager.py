@@ -53,7 +53,6 @@ def  getLatestDataFromS3(queryUrl,
             time.sleep(5)
 
     # lets make sure all the data is there
-
     files = fs.ls(queryUrl, refresh=True)
     while len(files) != attribs.RAW_DATA_COUNT:
         files = fs.ls(queryUrl, refresh=True)
