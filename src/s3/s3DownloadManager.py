@@ -1,13 +1,11 @@
 import bz2
 import s3fs
-import glob
 import os
 import time
 
 from sats import satellites
 from . import s3DateCarrier
 from . import s3DateUtil
-
 
 import concurrent.futures
 
@@ -40,6 +38,7 @@ def  getLatestDataFromS3(queryUrl,
     # lets check to see if the data is now there
     notValid = True
     retryCount = 0
+
     while notValid:
         retryCount += 1
         try:
@@ -66,26 +65,58 @@ def  getLatestDataFromS3(queryUrl,
 
 
     # now that all the checks are finally fucking done
-    s3GZfiles = fs.ls(queryUrl, refresh=True)
+    s3Files = fs.ls(queryUrl, refresh=True)
 
-    # lets split all the files into 4 chunks for a 4 threadded download and extract
-    divCount = int(len(s3GZfiles) / 4)
+    # we check if it is even for correct thread handling
+    if (int(len(s3Files)) % 2) == 0: 
+        
+        # lets split all the files into 4 chunks for a 4 threadded download and extract
+        divCount = int(len(s3Files) / 4)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-        th1 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[:divCount])
-        th2 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[divCount:divCount*2])
-        th3 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[divCount*2:divCount*3])
-        th4 = pool.submit(threaddedDeX, gzPath, datPath, s3GZfiles[divCount*3:divCount*4])
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            th1 = pool.submit(downloadWrapper, attribs.GZ_WRAPPED, gzPath, datPath, s3Files[:divCount])
+            th2 = pool.submit(downloadWrapper, attribs.GZ_WRAPPED, gzPath, datPath, s3Files[divCount:divCount*2])
+            th3 = pool.submit(downloadWrapper, attribs.GZ_WRAPPED, gzPath, datPath, s3Files[divCount*2:divCount*3])
+            th4 = pool.submit(downloadWrapper, attribs.GZ_WRAPPED, gzPath, datPath, s3Files[divCount*3:divCount*4])
+    
+        pool.shutdown(wait=True)
 
-    # append all the paths into a single place 
+        # append all the paths into a single place 
+        gzfPaths = []
+        gzfPaths += th1.result() + th2.result() + th3.result() + th4.result()
 
-    gzfPaths = []
-    gzfPaths += th1.result() + th2.result() + th3.result() + th4.result() 
+        return [gzfPaths, saTime]
+    
+    # run in single threadded as there is an odd file count
+    # check if there is a need to do gz extraction
+    if attribs.GZ_WRAPPED:
+        gzfPaths = []
+
+        for gzf in s3Files:
+            fs.download(gzf, gzPath+gzf[-47:])
+            gzfPaths.append(gzPath+gzf[-47:])
+            print("Downloaded s3 raw: {}".format(gzf))
+
+        # lets now extract the dat files from the bz files and put them in the correct folder
+       
+        for gz in gzfPaths:
+            gzFile = bz2.BZ2File(gz)
+            gzData = gzFile.read()
+            
+            wba = gz.split("/")
+            fn = wba[len(wba) - 1][:-4]
+            open(datPath + fn, "wb").write(gzData)
+            print("Wrote dat file: {}".format(datPath + fn))
+
+    else:
+        return [doDownload(datPath, s3Files), saTime]
+
+
 
 
 # takes both paths and an array of files in s3
 # downloads then extracts the files 
-def threaddedDeX(gzpath, datpath, files):
+def doDownloadExtract(gzpath, datpath, files):
    newpath = []
    
    for gzf in files:
@@ -103,6 +134,22 @@ def threaddedDeX(gzpath, datpath, files):
 
    return newpath
 
+
+# just download the file
+def doDownload(rawpath, files):
+    paths = []
+    for fi in files:
+        fs.download(fi, rawpath+fi[-47:])
+        paths.append(rawpath+fi[-47:])
+        print("Downloaded s3 raw: {}".format(fi))
+    return paths
+
+
+# if the files are GZ wrapped, we can switch between them
+def downloadWrapper(isGzWrapped, gzpath, datpath, files):
+    if isGzWrapped:
+        return doDownloadExtract(gzpath, datpath, files)
+    return doDownload(datpath, files)
 
 
 # checks if the s3 data is there and all intact before we run our ops

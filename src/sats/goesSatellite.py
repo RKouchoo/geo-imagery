@@ -30,3 +30,4 @@ class satellite:
         return cls.value
     
     IS_REAL = True
+    GZ_WRAPPED = False
