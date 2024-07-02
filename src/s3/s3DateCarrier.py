@@ -1,5 +1,5 @@
-# data helper for s3 dates, they get polled alot and this becomes easier 
-# gets serialised with a dataset for future refence
+# data helper for s3 dates, they get poked alot and this makes it easier 
+# to be serialised with a dataset in storage
 
 class carrier:
 
@@ -33,7 +33,7 @@ class carrier:
     def getTime(self):
         return self.time
         
-    def getDate(self):
+    def getDateArray(self):
         return self.date
 
     def getCompleteDateString(self):

@@ -1,22 +1,22 @@
-from datetime import datetime
+import datetime
 import numpy as np
 
-from . import s3DateCarrier
+from . import s3DateCarrier 
 
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
 # returns s3DateCarrier 
 def getHimawariLatestDate(clampWindow, timestep=10):
-    time = datetime.now()
+    time = datetime.datetime.now(datetime.UTC) # updated as datetime.UTC() is depriciated
     year = str(time.year)
     month = confine(time.month)
     day = confine(time.day)
-    firstHours = confine(time.strftime("%H"))
+    firstHours = confine(time.strftime("%H")) 
     currentMins = time.minute
 
     # check if we are going to use a valid s3 time, then clamp it to the correct range 
     if timestep == 10:
-        hours = firstHours + confine(str(confineMins(clampWindow, currentMins)))
+        hours = firstHours + confine(str(confineMinsPrevTen(currentMins)))
     else:
         hours = firstHours + str(currentMins)
     
@@ -41,11 +41,14 @@ def confineMins(windowArray, inMins):
     l = len(windowArray)
 
     if windowArray[idx] == inMins:
-        return windowArray[idx]
+        return windowArray[idx-1]
     elif windowArray[l-1] - inMins < 0:
-        return windowArray[l-1]
+        return windowArray[l-2]
     elif windowArray[idx] - inMins < 0:
         return windowArray[idx]
     else:
         return windowArray[abs(idx-1)]
 
+
+def confineMinsPrevTen(minute):
+    return ((minute + 5) // 10) * 10 - 10

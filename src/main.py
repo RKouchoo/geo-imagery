@@ -15,9 +15,9 @@ from sats import satellites
 himawarisat = satellites.HIMAWARI_9
 attribs = himawarisat.getAttributes()
 
-uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK, category=attribs.L1)
-print(uri[0])
-#s3DownloadManager.getLatestDataFromS3(uri[0], time=uri[1], satellite=himawarisat)
+uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK)
+#print(uri[0])
+s3DownloadManager.getLatestDataFromS3(uri[0], time=uri[1], satellite=himawarisat)
 
 #print(uri)
 #print(himawari(attribs.L1.ENCODER_TYPE))
