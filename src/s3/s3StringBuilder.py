@@ -33,7 +33,7 @@ def getLatestS3QueryAvaliable(sat=satellites.GENERIC, product=satTypeGeneric.att
 
     # we can do it the smart way but every s3 instance is different and would require spaghett
     queDepth = sat(product.QUE_DEPTH)
-    for i in range(0, int(queDepth) - 1):
+    for i in range(0, int(queDepth) - 1): # type: ignore
         s3Files = fs.ls(cwd, refresh=True)
         cwd = delimToLatest(s3Files)
 
