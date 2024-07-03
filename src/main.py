@@ -11,12 +11,21 @@ from sats import satellites
 # https://www.data.jma.go.jp/mscweb/en/himawari89/himawari_cast/himawari_cast.php
 
 
-himawarisat = satellites.HIMAWARI_9
-attribs = himawarisat.getAttributes()
-#uri = s3StringBuilder.buildLatestS3QueryURI(sat=himawarisat, prod=attribs.L1.FULL_DISK) # type: ignore
+himawariSat = satellites.HIMAWARI_9
+goesSat = satellites.GOES_18
+goesAttribs = goesSat.getAttributes()
+himAttribs = himawariSat.getAttributes()
+
 #ags = s3DownloadManager.getLatestDataFromS3("noaa-himawari9/AHI-L1b-FLDK/2024/07/02/1040/", saTime=s3DateCarrier.carrier("2024", "07", "02", "1040", False), satellite=himawarisat)
 #ags = s3DownloadManager.getLatestDataFromS3(uri[0], uri[1], satellite=himawarisat) # type: ignore
 
+uri = s3StringBuilder.buildLatestS3QueryURI(sat=goesSat, sector=goesAttribs.L1.FULL_DISK) # type: ignore
+#xs = s3StringBuilder.buildLatestS3QueryAvaliable(sat=himawariSat, product=himAttribs.L1, sector=himAttribs.L1.FULL_DISK)
+#xv = s3StringBuilder.buildLatestS3QueryAvaliable(sat=goesSat, product=goesAttribs.L1, sector=goesAttribs.L1.FULL_DISK)
+
+print(uri.getTime())
+
+'''
 cloud = "geocolor_high_clouds"
 
 
@@ -35,5 +44,5 @@ for comp in scene.available_composite_names():
     except:
         failed.append(comp)
 
-print(failed, good)
 
+'''

@@ -7,30 +7,31 @@ class L1(enum.Enum):
     FULL_DISK = "AHI-L1b-FLDK"
     JAPAN = "AHI-L1b-Japan"
     MESOSCALE = "AHI-L1b-Target"
+    MULTI_MESOSCALE = False
     ENCODER_TYPE = "ahi_hsd"
-    R_CHANNEL = "B03" 
-    G_CHANNEL = "B02"
-    B_CHANNEL = "B01"
-    IR_CHANNEL = "B16"
-    
+    QUE_DEPTH = 4
     
 
 class L2(enum.Enum):
     CLOUDS = "AHI-L2-FLDK-Clouds"
     MOISTURE = "AHI-L2-FLDK-ISatSS"
     WIND = "AHI-L2-FLDK-Winds"
+    R_CHANNEL = "B03" 
+    G_CHANNEL = "B02"
+    B_CHANNEL = "B01"
+    IR_CHANNEL = "B16"
     
 
 
 class satellite:
     IS_REAL = True
+    IS_DAY_NUM = False
 
     def __new__(self, cls):
         try:
             return cls.value
         except:
             return cls
-
     
     def getAttributes():
         return attrib

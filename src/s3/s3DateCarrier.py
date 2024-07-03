@@ -1,14 +1,19 @@
 # data helper for s3 dates, they get poked alot and this makes it easier 
 # to be serialised with a dataset in storage
 
+from datetime import date
+
+
 class carrier:
 
-    year = 0
-    month = 0
-    day = 0
-    time = 0
+    year = ""
+    month = ""
+    day = ""
+    time = ""
     generated = False
-    date = [year, month, day, time]
+    numDay = False
+
+    query = ""
 
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
@@ -19,9 +24,26 @@ class carrier:
         self.day = day
         self.time = time
         self.generated = generated
-        self.date = [year, month, day, time]
+
         return None
 
+    def setQueryURI(self, q):
+        self.query = q 
+
+    def getQueryURI(self):
+        return self.query
+    
+    def setQueryType(self, isDay):
+        self.numDay = isDay
+
+    def getIsGenerated(self):
+        return self.generated
+    
+    def setIsGenerated(self, gener):
+        self.generated = gener
+
+    def getQueryType(self):
+        return self.numDay
 
     def getYear(self):
         return self.year
@@ -34,12 +56,15 @@ class carrier:
     
     def getTime(self):
         return self.time
-        
-    def getDateArray(self):
-        return self.date
     
-    def getIsGenerated(self):
-        return self.generated
+    def getHour(self):
+        return self.time[:2] # 4 digit hour concat to string
+
+    def getDayEpoch(self):
+        return date(int(self.year), int(self.month), int(self.day)).timetuple().tm_yday
 
     def getCompleteDateString(self):
         return self.year + self.month + self.day + self.time
+
+
+    

@@ -1,12 +1,13 @@
 import datetime
 import numpy as np
+from datetime import date, timedelta
 
 from . import s3DateCarrier 
 
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
 # returns s3DateCarrier 
-def getHimawariLatestDate(clampWindow, timestep=10):
+def getLatestDateCarrier(clampWindow, timestep=10):
     time = datetime.datetime.now(datetime.UTC) # updated as datetime.UTC() is depriciated
     year = str(time.year)
     month = confine(time.month)
@@ -43,6 +44,25 @@ def jumpBack(currentCarrier):
 
     return s3DateCarrier.carrier(year, month, day, hours, False)
 
+
+def createCarrierFromURI(URI):
+
+    splt = URI.split("/")
+    l = len(splt)
+
+    # check if we have a URI that uses day number 
+    if l == 5:
+        # lets get the correct month and day from daynum
+        start = date(int(int(splt[2])), 1, 1)
+        final = start + timedelta(days=int(splt[3]) - 1)
+        carr = s3DateCarrier.carrier(splt[2], final.month, final.day,  splt[4] + "00", True)
+        carr.setQueryType(True)
+    else:
+        carr = s3DateCarrier.carrier(splt[2], splt[3], splt[4],  splt[5], False)
+        
+    carr.setIsGenerated(False)
+    carr.setQueryURI(URI)
+    return carr
 
 
 # confine values the himwari S3 UNC

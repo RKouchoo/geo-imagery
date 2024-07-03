@@ -13,7 +13,7 @@ class L1(enum.Enum):
     G_CHANNEL = "B02"
     B_CHANNEL = "B01"
     IR_CHANNEL = "B16"
-    
+    QUE_DEPTH = 4
     
 class L2(enum.Enum):
     CLOUDS = "sasd"
@@ -33,6 +33,7 @@ class satellite:
         return attrib
     
     IS_REAL = False
+    IS_DAY_NUM = False
 
 
 class attrib(satellite):

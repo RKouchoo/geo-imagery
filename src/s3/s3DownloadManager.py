@@ -29,7 +29,7 @@ def  getLatestDataFromS3(queryUrl,
     # lets check if the time was passed in 
     # we need the time key for saving the data in the right folders
     if saTime.year == None:
-        saTime = s3DateUtil.getHimawariLatestDate(attribs.TIME_SCALE)
+        saTime = s3DateUtil.getLatestDateCarrier(attribs.TIME_SCALE)
 
     # lets generate the gz and dat path
     gzPath = "../data/gz/{}/{}/".format(attribs.S3_SOURCE_PATH, saTime.getCompleteDateString()) 

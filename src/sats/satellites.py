@@ -6,7 +6,7 @@ from . import satTypeGeneric
 
 
 HIMAWARI_9 = himawariSatellite.satellite
-GOES_16 = goesSatellite.satellite
+GOES_18 = goesSatellite.satellite
 GENERIC = satTypeGeneric.satellite
 
 def __init__(self):
