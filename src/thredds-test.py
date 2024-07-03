@@ -9,7 +9,7 @@ datPath = "../data/thredds/"
 
 
 def genThreddsUrl():
-     dd = s3DateUtil.getLatestDateCarrier()
+     dd = s3DateUtil.getLatestDateCarrier(negativeOffset=10)
      url = "https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/{}/catalog.xml".format(dd.getStdQueryString())
      dd.setQueryURI(url)
      print(url)

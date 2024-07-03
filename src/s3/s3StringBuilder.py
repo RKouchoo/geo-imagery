@@ -1,5 +1,3 @@
-from typing import List
-
 from . import s3DateUtil
 from . import s3DateCarrier
 from sats import satellites
@@ -12,7 +10,7 @@ import s3fs
 # returns a carrier class
 def buildLatestS3QueryURI(sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK):
     satribs = sat.getAttributes()
-    goTime = s3DateUtil.getLatestDateCarrier(satribs.TIME_SCALE)
+    goTime = s3DateUtil.getLatestDateCarrier()
     
     URI = "{}/{}/{}/{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), goTime.getYear(), goTime.getMonth(), goTime.getDay(), goTime.getTime())
     if satribs.IS_DAY_NUM:

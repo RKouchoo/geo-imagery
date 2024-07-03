@@ -1,3 +1,6 @@
 # https://www.reddit.com/r/RTLSDR/comments/b2dlxx/full_disc_earth_from_australia/
 # https://www.reddit.com/r/RTLSDR/comments/8n6td9/could_i_use_this_old_satelite_tv_dish_to_receive/
 https://github.com/pytroll/satpy/issues/569
+
+
+https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/2024/07/03/0710/catalog.xml

@@ -7,13 +7,13 @@ from . import s3DateCarrier
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
 # returns s3DateCarrier 
-def getLatestDateCarrier(timestep=10):
+def getLatestDateCarrier(timestep=10, negativeOffset=0):
     time = datetime.datetime.now(timezone.utc) # updated as datetime.UTC() is depriciated
     year = str(time.year)
     month = confine(time.month)
     day = confine(time.day)
     firstHours = confine(time.strftime("%H")) 
-    currentMins = time.minute
+    currentMins = time.minute - negativeOffset
 
     # check if we are going to use a valid s3 time, then clamp it to the correct range 
     if timestep == 10:
