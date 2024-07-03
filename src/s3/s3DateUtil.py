@@ -1,14 +1,14 @@
 import datetime
 import numpy as np
-from datetime import date, timedelta
+from datetime import date, timedelta, timezone
 
 from . import s3DateCarrier 
 
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
 # returns s3DateCarrier 
-def getLatestDateCarrier(clampWindow, timestep=10):
-    time = datetime.datetime.now(datetime.UTC) # updated as datetime.UTC() is depriciated
+def getLatestDateCarrier(timestep=10):
+    time = datetime.datetime.now(timezone.utc) # updated as datetime.UTC() is depriciated
     year = str(time.year)
     month = confine(time.month)
     day = confine(time.day)

@@ -65,6 +65,9 @@ class carrier:
 
     def getCompleteDateString(self):
         return self.year + self.month + self.day + self.time
+    
+    def getStdQueryString(self):
+        return "{}/{}/{}/{}".format(self.year, self.month, self.day, self.time)
 
 
     

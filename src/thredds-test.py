@@ -3,10 +3,18 @@ import urllib.request
 
 import threddsclient
 
-urls = threddsclient.download_urls("https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/2024/07/03/0710/catalog.xml")
+from s3 import s3DateUtil
 
 datPath = "../data/thredds/"
 
+
+def genThreddsUrl():
+     dd = s3DateUtil.getLatestDateCarrier()
+     url = "https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/{}/catalog.xml".format(dd.getStdQueryString())
+     dd.setQueryURI(url)
+     print(url)
+     return dd
+     
 
 def downloadWrapper(path, urls):
     for url in urls:
@@ -17,7 +25,10 @@ def downloadWrapper(path, urls):
         print("Downloaded: {}".format(totalpath))
     print("Thread exit. Total: {} ".format(len(urls)))
 
-test = threddsclient.download_urls("https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/2024/07/03/0710/catalog.xml")
+
+obj = genThreddsUrl()
+test = threddsclient.download_urls(obj.getQueryURI())
+print(len(test))
 
 if False:
      
@@ -26,7 +37,7 @@ if False:
             # lets split all the files into 4 chunks for a 4 threadded download and extract
             divCount = int(len(urls) / 4)
             
-            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            with sconcurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
                 th1 = pool.submit(downloadWrapper, datPath, urls[:divCount])
                 th2 = pool.submit(downloadWrapper, datPath, urls[divCount:divCount*2])
                 th3 = pool.submit(downloadWrapper, datPath, urls[divCount*2:divCount*3])
