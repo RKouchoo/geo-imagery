@@ -3,13 +3,13 @@ import urllib.request
 
 import threddsclient
 
-from s3 import s3DateUtil
+from remote import dateUtil
 
 datPath = "../data/thredds/"
 
 
 def genThreddsUrl():
-     dd = s3DateUtil.getLatestDateCarrier(negativeOffset=10)
+     dd = dateUtil.getLatestDateCarrier(negativeOffset=0)
      url = "https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/{}/catalog.xml".format(dd.getStdQueryString())
      dd.setQueryURI(url)
      print(url)

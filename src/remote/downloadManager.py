@@ -4,8 +4,8 @@ import os
 import time
 
 from sats import satellites
-from . import s3DateCarrier
-from . import s3DateUtil
+from . import dateCarrier
+from . import dateUtil
 
 import concurrent.futures
 
@@ -16,7 +16,7 @@ fs = s3fs.S3FileSystem(anon=True)
 # Download manager
 # I set generic values here so its easier for autocompletion
 def  getLatestDataFromS3(queryUrl, 
-                         saTime=s3DateCarrier.carrier(None, None, None, None, False), 
+                         saTime=dateCarrier.carrier(None, None, None, None, False), 
                          satellite=satellites.GENERIC, 
                          ):
 
@@ -29,7 +29,7 @@ def  getLatestDataFromS3(queryUrl,
     # lets check if the time was passed in 
     # we need the time key for saving the data in the right folders
     if saTime.year == None:
-        saTime = s3DateUtil.getLatestDateCarrier(attribs.TIME_SCALE)
+        saTime = dateUtil.getLatestDateCarrier()
 
     # lets generate the gz and dat path
     gzPath = "../data/gz/{}/{}/".format(attribs.S3_SOURCE_PATH, saTime.getCompleteDateString()) 

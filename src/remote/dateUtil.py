@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 from datetime import date, timedelta, timezone
 
-from . import s3DateCarrier 
+from . import dateCarrier 
 
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
@@ -21,7 +21,7 @@ def getLatestDateCarrier(timestep=10, negativeOffset=0):
     else:
         hours = firstHours + str(currentMins)
     
-    return s3DateCarrier.carrier(year, month, day, hours, True)
+    return dateCarrier.carrier(year, month, day, hours, True)
 
 
 
@@ -42,7 +42,7 @@ def jumpBack(currentCarrier):
     day = confine(day)
     hours = confine(hours)
 
-    return s3DateCarrier.carrier(year, month, day, hours, False)
+    return dateCarrier.carrier(year, month, day, hours, False)
 
 
 def createCarrierFromURI(URI):
@@ -55,10 +55,10 @@ def createCarrierFromURI(URI):
         # lets get the correct month and day from daynum
         start = date(int(int(splt[2])), 1, 1)
         final = start + timedelta(days=int(splt[3]) - 1)
-        carr = s3DateCarrier.carrier(splt[2], final.month, final.day,  splt[4] + "00", True)
+        carr = dateCarrier.carrier(splt[2], final.month, final.day,  splt[4] + "00", True)
         carr.setQueryType(True)
     else:
-        carr = s3DateCarrier.carrier(splt[2], splt[3], splt[4],  splt[5], False)
+        carr = dateCarrier.carrier(splt[2], splt[3], splt[4],  splt[5], False)
         
     carr.setIsGenerated(False)
     carr.setQueryURI(URI)
