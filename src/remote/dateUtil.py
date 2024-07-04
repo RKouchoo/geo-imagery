@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 from datetime import date, timedelta, timezone
 
-from . import dateCarrier 
+import dateCarrier 
 
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
@@ -24,7 +24,7 @@ def getLatestDateCarrier(timestep=10, negativeOffset=0):
     return dateCarrier.carrier(year, month, day, hours, True)
 
 
-
+# this is junk do not use it 
 # jump back to the previous timestamp if the current one is too far ahead
 def jumpBack(currentCarrier):
 

@@ -8,11 +8,11 @@ import s3fs
 
 # build the latest query based on time
 # returns a carrier class
-def buildLatestS3QueryURI(sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK):
+def buildLatestS3QueryURI(sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK, goTime=dateUtil.getLatestDateCarrier()):
     satribs = sat.getAttributes()
     goTime = dateUtil.getLatestDateCarrier()
     
-    URI = "{}/{}/{}/{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), goTime.getYear(), goTime.getMonth(), goTime.getDay(), goTime.getTime())
+    URI = "{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), goTime.getStdQueryString())
     if satribs.IS_DAY_NUM:
         URI = "{}/{}/{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), goTime.getYear(), goTime.getDayEpoch(), goTime.getHour())
 
@@ -45,7 +45,7 @@ def getLatestS3QueryAvaliable(sat=satellites.GENERIC, product=satTypeGeneric.att
 def buildCustomS3Query(qcarrier=dateCarrier.carrier(None, None, None, None, True), sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK):
     satribs = sat.getAttributes()
 
-    URI = "{}/{}/{}/{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), qcarrier.getYear(), qcarrier.getMonth(), qcarrier.getDay(), qcarrier.getTime())
+    URI = "{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), qcarrier.getStdQueryString())
     if satribs.IS_DAY_NUM:
         URI = "{}/{}/{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), qcarrier.getYear(), qcarrier.getDayEpoch(), qcarrier.getHour())
         qcarrier.setQueryType(True)
@@ -55,6 +55,16 @@ def buildCustomS3Query(qcarrier=dateCarrier.carrier(None, None, None, None, True
 
     return qcarrier
 
+
+# at the moment, I ony have himawari access to thredds
+# will be adding goes support when I find it
+def buildLatestTdQueryURI(offset=0):
+    dd = dateUtil.getLatestDateCarrier(negativeOffset=offset)
+    url = "https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/{}/catalog.xml".format(dd.getStdQueryString())
+    
+    dd.setQueryURI(url)
+
+    return dd
 
 
 # little helper to grab the last entry in an array always
