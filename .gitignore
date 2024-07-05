@@ -21,3 +21,6 @@ sats/__pycache__/
 data/
 
 *.png
+
+cache/
+cache2/

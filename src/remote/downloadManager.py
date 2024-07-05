@@ -161,15 +161,15 @@ def downloadThreddsList(path, urls):
             remote = urllib.request.urlopen(url).info().get('Content-Length', 0)
 
             if int(remote) == int(local):
-                print("File {} exists, skippping.".format(totalpath))
+                print("File {} exists and matches remote copy, skippping!".format(totalpath))
             else:
                 urllib.request.urlretrieve(url, totalpath)
-                print("Downloaded: {}".format(totalpath))
+                print("File mismatch - overwrote local copy: {}".format(totalpath))
         else:
             urllib.request.urlretrieve(url, totalpath)
             print("Downloaded: {}".format(totalpath))
     
-    print("Thread exit. Total: {} ".format(len(urls)))
+    print("Download thread exit. Total in this thread: {}".format(len(urls)))
 
 
 # takes both paths and an array of files in s3
