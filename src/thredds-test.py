@@ -1,10 +1,9 @@
 import concurrent.futures
 import urllib.request
-import _thread
 import os
 
 from remote import threddsBuilder
-from remote import dateUtil
+from remote import dateCarrier
 
 def download(path, urls):
     if not os.path.exists(path):
@@ -21,7 +20,7 @@ def download(path, urls):
 
 # downloads every dataset that was uploaded today (up until now)
 
-def downloadToday():
+def downloadToday(day=threddsBuilder.getThreddsDayURI()):
 
     datPath = "../data/thredds/"
     day = threddsBuilder.getThreddsDayURI()
@@ -31,6 +30,9 @@ def downloadToday():
     for d in dataset:
         urls = threddsBuilder.getThreddsDownloadURLs(d.getQueryURI())
         datPath = "../data/thredds/{}/{}/".format("himawari9", d.getCompleteDateString())
+        
+        if len(urls) < 160:
+            pass
 
         if True: 
                 # lets split all the files into 4 chunks for a 4 threadded download and extract
@@ -46,4 +48,4 @@ def downloadToday():
 
 
 
-downloadToday()
+downloadToday(day=threddsBuilder.getThreddsDayCustomURI(dateCarrier.carrier("2024", "07", "04", "00", True)))
