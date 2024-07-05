@@ -6,6 +6,8 @@ from sats import satellites
 from remote import queryStringBuilder
 import os
 from satpy.utils import debug_on
+
+import shutil
 #debug_on()
 
 
@@ -25,7 +27,7 @@ def collectFromS3():
 #collectFromS3()
 
 
-subdirs = SubDirPath(WindowsPath(r'..\data\processed\noaa-himawari9'))
+subdirs = SubDirPath(WindowsPath(r'..\data\thredds\himawari9'))
 
 template = 'true_color_reproduction_corr' # true_color
 
@@ -61,6 +63,8 @@ for g in subdirs:
     #ns.load([template], generate=False)#, calibration="radiance")
 
     ns.save_datasets(dataset_id=template, filename=f"{os.getcwd()}/himawari_{i}xyz4.png", compute=True)
+
+    shutil.move(g, "../proc")
     
 
 
