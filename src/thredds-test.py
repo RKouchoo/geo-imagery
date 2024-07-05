@@ -45,4 +45,4 @@ def downloadCompleteDataset(day=None):
 
 
 
-downloadCompleteDataset(day=threddsBuilder.getThreddsDayCustomURI(dateCarrier.carrier("2024", "07", "04", "00", True)))
+downloadCompleteDataset(threddsBuilder.getThreddsDayCustomURI(dateCarrier.carrier("2024", "07", "04", "00", False)))

@@ -25,8 +25,7 @@ def getThreddsDayURI():
 
 
 # generate the link to todays XML file 
-def getThreddsDayCustomURI(date=dateUtil.getLatestDateCarrier()):
-    date = dateUtil.getLatestDateCarrier()
+def getThreddsDayURI(date):
     url = "https://thredds.nci.org.au/thredds/catalog/gc63/satellite-products/nrt/raw/himawari-ahi/fldk/latest/{}/{}/{}/catalog.xml".format(date.getYear(), date.getMonth(), date.getDay())
     date.setQueryURI(url)
     return(date)
