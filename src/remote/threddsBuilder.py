@@ -2,8 +2,8 @@ import urllib.request
 import xml.etree.ElementTree as etree
 import os
 
-import dateUtil
-import dateCarrier
+from . import dateUtil
+from . import dateCarrier
 
 
 # attempt to get the latest thredds URI  based on system time 

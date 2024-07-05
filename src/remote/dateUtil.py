@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 from datetime import date, timedelta, timezone
 
-import dateCarrier 
+from . import dateCarrier 
 
 # generate a array with the correct formatting for himawari s3
 # int timestep to determine which time slot we are looking at, default is 10 mins
