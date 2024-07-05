@@ -4,9 +4,9 @@ from pathlib import WindowsPath
 from remote import downloadManager
 from sats import satellites
 from remote import queryStringBuilder
-
+import os
 from satpy.utils import debug_on
-debug_on()
+#debug_on()
 
 
 # https://github.com/pytroll/satpy/blob/main/satpy/etc/readers/ahi_hsd.yaml
@@ -22,12 +22,12 @@ def collectFromS3():
     downloadManager.getLatestDataFromS3(URI.getQueryURI(), saTime=URI, satellite=himawariSat) # type: ignore
 
 
-collectFromS3()
+#collectFromS3()
 
 
 subdirs = SubDirPath(WindowsPath(r'..\data\processed\noaa-himawari9'))
 
-template = 'geo_color_background_with_low_clouds' # true_color
+template = 'true_color_reproduction_corr' # true_color
 
 opts =  ['airmass', 'ash', 'cloud_phase_distinction', 'cloud_phase_distinction_raw', 
         'cloudtop', 'colorized_ir_clouds', 'convection', 'day_microphysics_ahi', 
@@ -43,19 +43,24 @@ opts =  ['airmass', 'ash', 'cloud_phase_distinction', 'cloud_phase_distinction_r
         'true_color_reproduction_uncorr', 'true_color_with_night_ir', 'true_color_with_night_ir_hires', 'water_vapors1', 'water_vapors2']
 
 
+# ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16']
 
 i = 0
+
 for g in subdirs:
 
     i += 1
     f = find_files_and_readers(base_dir=g, reader='ahi_hsd')
     
     scenex = Scene(reader="ahi_hsd", filenames=f)
-    scenex.load([template], generate=True)#, calibration="radiance")
-    
-    
-    ns = scenex.resample(scenex.finest_area(), cache_dir="../cache2",  resampler='nearest') # nearest
-    ns.save_dataset(dataset_id=template, writer="simple_image", filename=f"./himawari_{i}xyz4.png")
+    print(scenex.all_dataset_names())
+    scenex.load([template], generate=True)
+
+    ns = scenex.resample(scenex.coarsest_area(), cache_dir="../cache2",  resampler='native') # nearest
+    #ns.show(template)
+    #ns.load([template], generate=False)#, calibration="radiance")
+
+    ns.save_datasets(dataset_id=template, filename=f"{os.getcwd()}/himawari_{i}xyz4.png", compute=True)
     
 
 

@@ -21,6 +21,10 @@ sats/__pycache__/
 data/
 
 *.png
+*.jpg
+*.avi
+*.mp4
+imvideo.py
 
 cache/
 cache2/
