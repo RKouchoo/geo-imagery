@@ -22,7 +22,7 @@ def downloadList(path, urls):
 # day = custom date via carrier class
 def downloadCompleteDataset(day=None):
     datPath = "../data/thredds/"
-    if not day.getQueryURI():
+    if day is None:
         day = threddsBuilder.getThreddsDayURI()
 
     dataset = threddsBuilder.getThreddsCompleteDataset(day.getQueryURI())
