@@ -20,8 +20,11 @@ def downloadList(path, urls):
 
 # downloads every dataset that was uploaded for the date range (up until now)
 # day = custom date via carrier class
-def downloadCompleteDataset(day=threddsBuilder.getThreddsDayURI()):
+def downloadCompleteDataset(day=None):
     datPath = "../data/thredds/"
+    if day is None:
+        day = threddsBuilder.getThreddsDayURI()
+
     dataset = threddsBuilder.getThreddsCompleteDataset(day.getQueryURI())
 
     for d in dataset:
