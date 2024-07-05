@@ -12,6 +12,7 @@ from . import threddsBuilder
 
 import concurrent.futures
 
+from multiprocessing.pool import ThreadPool as Pool
 
 # lets init the s3 connector as we will need it while this class is alive
 fs = s3fs.S3FileSystem(anon=True)
@@ -136,15 +137,51 @@ def downloadCompleteThreddsDataset(path, day=None, dataset=None):
         if len(urls) == 160:
             # lets split all the files into 4 chunks for a 4 threadded download and extract
             divCount = int(len(urls) / 4)
-                
-            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            
+            downloadThreddsLargeThreadded(datPath, urls[:divCount])
+            downloadThreddsLargeThreadded(datPath, urls[divCount:divCount*2])
+            downloadThreddsLargeThreadded(datPath, urls[divCount*2:divCount*3])
+            downloadThreddsLargeThreadded(datPath, urls[divCount*3:divCount*4])
+            '''
+            with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
                 th1 = pool.submit(downloadThreddsList, datPath, urls[:divCount])
                 th2 = pool.submit(downloadThreddsList, datPath, urls[divCount:divCount*2])
                 th3 = pool.submit(downloadThreddsList, datPath, urls[divCount*2:divCount*3])
-                th4 = pool.submit(downloadThreddsList, datPath, urls[divCount*3:divCount*4])
             
             pool.shutdown(wait=True)
+            '''
 
+def ligma(url, path):
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    fname = url.split("/")
+    fname = fname[len(fname) - 1]
+    totalpath = path + fname
+        
+    if os.path.isfile(totalpath):
+        local = os.stat(totalpath).st_size
+        remote = urllib.request.urlopen(url).info().get('Content-Length', 0)
+
+        if int(remote) == int(local):
+            print("File {} exists and matches remote copy, skippping!".format(totalpath))
+        else:
+            urllib.request.urlretrieve(url, totalpath)
+            print("File mismatch - overwrote local copy: {}".format(totalpath))
+    else:
+        urllib.request.urlretrieve(url, totalpath)
+        print("BIG THREAD Downloaded: {}".format(totalpath))
+
+
+# download helper for thredds specific
+def downloadThreddsLargeThreadded(path, urls):
+    pool = Pool(len(urls))
+    for url in urls:
+        pool.apply_async(ligma,  (url, path))
+    
+    pool.close()
+    pool.join()
 
 # download helper for thredds specific
 def downloadThreddsList(path, urls):
