@@ -3,9 +3,12 @@ import s3fs
 import os
 import time
 
+import urllib.request
+
 from sats import satellites
 from . import dateCarrier
 from . import dateUtil
+from . import threddsBuilder
 
 import concurrent.futures
 
@@ -117,6 +120,56 @@ def  getLatestDataFromS3(queryUrl,
         return [doDownload(datPath, s3Files), saTime]
 
 
+# downloads every dataset that was uploaded for the date range (up until now)
+# day = custom date via carrier class
+def downloadCompleteThreddsDataset(path, day=None, dataset=None):
+    if day is None:
+        day = threddsBuilder.getThreddsDayURI()
+
+    if dataset is None:
+        dataset = threddsBuilder.getThreddsCompleteDataset(day.getQueryURI())
+
+    for d in dataset:
+        urls = threddsBuilder.getThreddsDownloadURLs(d.getQueryURI())
+        datPath = "../data/thredds/{}/{}/".format("himawari9", d.getCompleteDateString())
+        
+        if len(urls) == 160:
+            # lets split all the files into 4 chunks for a 4 threadded download and extract
+            divCount = int(len(urls) / 4)
+                
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                th1 = pool.submit(downloadThreddsList, datPath, urls[:divCount])
+                th2 = pool.submit(downloadThreddsList, datPath, urls[divCount:divCount*2])
+                th3 = pool.submit(downloadThreddsList, datPath, urls[divCount*2:divCount*3])
+                th4 = pool.submit(downloadThreddsList, datPath, urls[divCount*3:divCount*4])
+            
+            pool.shutdown(wait=True)
+
+
+# download helper for thredds specific
+def downloadThreddsList(path, urls):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    for url in urls:
+        fname = url.split("/")
+        fname = fname[len(fname) - 1]
+        totalpath = path + fname
+        
+        if os.path.isfile(totalpath):
+            local = os.stat(totalpath).st_size
+            remote = urllib.request.urlopen(url).info().get('Content-Length', 0)
+
+            if int(remote) == int(local):
+                print("File {} exists, skippping.".format(totalpath))
+            else:
+                urllib.request.urlretrieve(url, totalpath)
+                print("Downloaded: {}".format(totalpath))
+        else:
+            urllib.request.urlretrieve(url, totalpath)
+            print("Downloaded: {}".format(totalpath))
+    
+    print("Thread exit. Total: {} ".format(len(urls)))
 
 
 # takes both paths and an array of files in s3
