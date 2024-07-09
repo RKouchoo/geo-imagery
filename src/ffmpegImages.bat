@@ -1,0 +1,1 @@
+ffmpeg -hwaccel cuda -hwaccel_output_format cuda -framerate 10 -pattern_type sequence -i himawari_%%04d.png -c:v h264_nvenc -b:v 0 -s 4096x4096 out.mp4
