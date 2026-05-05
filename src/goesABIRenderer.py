@@ -45,19 +45,15 @@ if (len(renderQue) == 0):
 print(f"{len(renderQue)} Images to render, starting...")     
 
 
-
-
 for job in renderQue:
     
     with dask.config.set({"array.chunk-size" : "512MiB"}):
  
         imageName = f"{renderTemplate}.{str(job).strip("data/processed/noaa-goes19/")}.png"
 
-        #abi_dataset_reader = find_files_and_readers(base_dir=job, reader="abi_l1b")
-
-        files=glob(f"{job}/*.nc")
+        files = glob(f"{job}/*.nc")
         
-        dataset_scene = Scene(reader="abi_l2_nc", filenames=files, reader_kwargs={'mask_space': False})
+        dataset_scene = Scene(reader="abi_l1b", filenames=files)
 
         dataset_scene.load([renderTemplate], generate=False)
         resampled_dataset_scene = dataset_scene.resample(dataset_scene.coarsest_area(), cachedir="./rendercache", resampler="native")

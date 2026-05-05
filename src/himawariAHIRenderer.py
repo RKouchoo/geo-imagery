@@ -44,8 +44,8 @@ for job in renderQue:
 
         imageName = f"{renderTemplate}.{str(job).strip("data/processed/noaa-himawari9/")}.png"
 
-        ahi_dataset_reader = find_files_and_readers(base_dir=job, reader="ahi_hsd")
-        dataset_scene = Scene(reader="ahi_hsd", filenames=ahi_dataset_reader, reader_kwargs={'mask_space': False})
+        files = glob(f"{job}/*.DAT")
+        dataset_scene = Scene(reader="ahi_hsd", filenames=files, reader_kwargs={'mask_space': False})
 
         dataset_scene.load([renderTemplate], generate=False)
         resampled_dataset_scene = dataset_scene.resample(dataset_scene.coarsest_area(), cachedir="./rendercache", resampler="native")

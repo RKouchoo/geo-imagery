@@ -259,6 +259,10 @@ def singleDownloadExtract(gzpath, datpath, gzf, retain=True):
 
     return newpath
 
+def singleDownload(datpath, fileName):
+
+    fs.download(fileName, datpath)
+    print("Wrote DAT file: {}".format(fileName))
 
 
 # just download the file

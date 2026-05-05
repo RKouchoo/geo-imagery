@@ -57,7 +57,7 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
             if satellite.getAttributes().GZ_WRAPPED:
                 downloadManager.singleDownloadExtract(gzPath, datPath, file, retainGz)
             else:
-                downloadManager.doDownload(datPath, [file])
+                downloadManager.singleDownload(datPath, file)
 
 
         # 160 files, 16 threads, 10 files per thread
