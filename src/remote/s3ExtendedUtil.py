@@ -16,15 +16,20 @@ from . import downloadManager
 fs = s3fs.S3FileSystem(anon=True)
 
 
-def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False), satellite=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK, datapathdir="./data", retainGz=True):
-
+def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False), satellite=satellites.GENERIC, parentQueryURI="", sector=satTypeGeneric.attrib.L1.FULL_DISK, datapathdir="./data", retainGz=True):
     attribs = satellite.getAttributes()
 
     # check if args were handed in correctly
     if satellite.IS_REAL == False:
         return 0
 
-    parentQueryURI = queryStringBuilder.buildCustomS3QueryDayOnly(saTime, satellite, sector)
+
+    if parentQueryURI != "":
+        # good do nothing
+        0 - 0 
+    else:
+        parentQueryURI = queryStringBuilder.buildCustomS3QueryDayOnly(saTime, satellite, sector)
+
     s3SubDirs = fs.ls(parentQueryURI.getQueryURI(), refresh=True)
 
 
@@ -32,7 +37,7 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
     for s3dir in s3SubDirs:
         files = fs.ls(s3dir, refresh=True)
 
-        if len(files) != 160:
+        if len(files) != attribs.RAW_DATA_COUNT:
             print(f"Download not ready yet: {s3dir}, skipping.")
             continue
 
@@ -50,7 +55,10 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
             os.makedirs(datPath)
 
         def threaddableDownload(file):
-            downloadManager.singleDownloadExtract(gzPath, datPath, file, retainGz)
+            if satellite.getAttributes().GZ_WRAPPED:
+                downloadManager.singleDownloadExtract(gzPath, datPath, file, retainGz)
+            else:
+                downloadManager.doDownload(datPath, [file])
 
 
         # 160 files, 16 threads, 10 files per thread

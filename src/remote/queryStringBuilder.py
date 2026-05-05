@@ -65,6 +65,14 @@ def buildCustomS3QueryDayOnly(qcarrier=dateCarrier.carrier(None, None, None, Non
 
     return qcarrier
 
+# automatically build a day query
+def buildDayQuery(sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK):
+    std = buildLatestS3QueryURI(sat, sector)
+    std.setQueryURI(std.getQueryURI()[:-4] + "/")
+
+    return std
+
+
 
 # at the moment, I ony have himawari access to thredds
 # will be adding goes support when I find it

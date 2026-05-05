@@ -260,6 +260,7 @@ def singleDownloadExtract(gzpath, datpath, gzf, retain=True):
     return newpath
 
 
+
 # just download the file
 def doDownload(rawpath, files):
     paths = []
