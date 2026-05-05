@@ -1,16 +1,19 @@
 from satpy import Scene, find_files_and_readers, MultiScene, DataQuery
-from pathlib import WindowsPath
+from satpy.composites.fill import BackgroundCompositor
+from satpy.utils import debug_on
+import dask
 
 from remote import downloadManager
 from sats import satellites
 from remote import queryStringBuilder
+
 import os
-from satpy.utils import debug_on
-
-from satpy.composites import BackgroundCompositor
-
+from pathlib import Path
+import datetime
+from datetime import date, timedelta, timezone
 import shutil
-import dask
+
+
 #debug_on()
 
 
@@ -27,15 +30,6 @@ def collectFromS3():
     downloadManager.getLatestDataFromS3(URI.getQueryURI(), saTime=URI, satellite=himawariSat) # type: ignore
 
 
-#collectFromS3()
-
-dask.config.set(**{'array.slicing.split_large_chunks': False})
-
-
-subdirs = SubDirPath(WindowsPath(r'..\data\thredds\himawari9'))
-
-template = 'colorized_ir_clouds' # true_color
-
 opts =  ['airmass', 'ash', 'cloud_phase_distinction', 'cloud_phase_distinction_raw',
         'cloudtop', 'colorized_ir_clouds', 'convection', 'day_microphysics_ahi',
         'day_microphysics_eum', 'dust', 'fire_temperature', 'fire_temperature_39refl',
@@ -49,20 +43,28 @@ opts =  ['airmass', 'ash', 'cloud_phase_distinction', 'cloud_phase_distinction_r
         'true_color_reproduction', 'true_color_reproduction_corr', 'true_color_reproduction_night_ir',
         'true_color_reproduction_uncorr', 'true_color_with_night_ir', 'true_color_with_night_ir_hires', 'water_vapors1', 'water_vapors2']
 
-
 chann = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16']
 
-i = 0
-			
-for g in subdirs:
-	f = find_files_and_readers(base_dir=g, reader='ahi_hsd')
-	scenex = Scene(reader="ahi_hsd", filenames=f, reader_kwargs={'mask_space': False})
-	#print(scenex.available_composite_names())
-	scenex.load([template], generate=True)
-	ns = scenex.resample(scenex.coarsest_area(), cache_dir="../cache2",  resampler='nearest') # native # scenex['B03'].attrs['area']
-	ns.save_datasets(dataset_id=template, filename=f"{os.getcwd()}/himawari_{'%04d' % i}.png", compute=True)
-	i += 1
-		
-		
+#collectFromS3()
+dask.config.set(**{'array.slicing.split_large_chunks': False})
 
+#..\data\processed\noaa-himawari9\202602171430
+subdirs = SubDirPath(Path(r'../data/processed/noaa-himawari9'))
 
+active_template = 'true_color_reproduction' # true_color
+
+render1 = "true_color_reproduction_uncorr" #colorized_ir_clouds true_color_reproduction_uncorr true_color_reproduction_corr
+
+#print(f"{render1}.{datetime.datetime.timestamp(datetime.datetime.now())}.png")
+
+for datadir in subdirs:
+    with dask.config.set({"array.chunk-size" : "512MiB"}):
+
+        ahi_dataset_reader = find_files_and_readers(base_dir=datadir, reader="ahi_hsd")
+        dataset_scene = Scene(reader="ahi_hsd", filenames=ahi_dataset_reader, reader_kwargs={'mask_space': False})
+
+        dataset_scene.load([render1], generate=False)
+        resampled_dataset_scene = dataset_scene.resample(dataset_scene.coarsest_area(), cachedir="../cache3", resampler="native")
+        resampled_dataset_scene.save_datasets(dataset_id=render1, filename=f"{render1}.{datetime.datetime.now(timezone.utc)}.png", compute=True)
+
+        #os.popen("./dataset_clut_merge.sh")

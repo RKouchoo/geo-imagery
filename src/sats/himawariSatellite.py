@@ -48,3 +48,4 @@ class attrib:
     TIME_SCALE = [0, 10, 20, 30, 40, 50]
     RAW_DATA_COUNT = 160
     GZ_WRAPPED = True
+    IS_DAY_NUM = False

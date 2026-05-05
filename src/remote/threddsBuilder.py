@@ -6,6 +6,9 @@ from . import dateUtil
 from . import dateCarrier
 
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 # attempt to get the latest thredds URI  based on system time 
 # pass an offset time if you think the server is slow
 def genLatestThreddsUrl(negativeOffset=0):
