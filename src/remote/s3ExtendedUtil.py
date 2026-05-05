@@ -58,4 +58,4 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
             executor.map(threaddableDownload, files)
 
         print(f"Downloaded {s3dir} moving to next dataset")
-        time.sleep(1)
+        
