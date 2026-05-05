@@ -56,6 +56,16 @@ def buildCustomS3Query(qcarrier=dateCarrier.carrier(None, None, None, None, True
     return qcarrier
 
 
+# build a S3 query with no time stamp, we just want the day resolution
+def buildCustomS3QueryDayOnly(qcarrier=dateCarrier.carrier(None, None, None, None, True), sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK):
+    satribs = sat.getAttributes()
+    URI = "{}/{}/{}/{}/{}/".format(satribs.S3_SOURCE_PATH, sat(sector), qcarrier.getYear(), qcarrier.getMonth(), qcarrier.getDay())
+    qcarrier.setQueryURI(URI)
+    qcarrier.setIsGenerated(False)
+
+    return qcarrier
+
+
 # at the moment, I ony have himawari access to thredds
 # will be adding goes support when I find it
 def buildLatestTdQueryURI(offset=0):

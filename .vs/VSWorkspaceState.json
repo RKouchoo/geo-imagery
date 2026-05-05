@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\remote"
   ],
-  "SelectedNode": "\\dayRender.py",
+  "SelectedNode": "\\src\\remote\\downloadManager.py",
   "PreviewInSolutionExplorer": false
 }
