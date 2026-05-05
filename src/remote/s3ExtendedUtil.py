@@ -32,6 +32,10 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
     for s3dir in s3SubDirs:
         files = fs.ls(s3dir, refresh=True)
 
+        if len(files) != 160:
+            print(f"Download not ready yet: {s3dir}, skipping.")
+            continue
+
         dates = [p for p in s3dir.split("/") if p.isdigit()]
         s3DateStamp = "".join(dates)
 

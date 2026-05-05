@@ -49,11 +49,11 @@ def images_to_video(image_folder, output_video_file, fps=30, duration=5, target_
         
         resized_img = resize_image(img, target_width, target_height)
         
-        for _ in range(fps * duration):  # This will make each image last for 'duration' seconds
+        for _ in range(fps):  # This will make each image last for 'duration' seconds
             out.write(resized_img)
     
     out.release()
 
 # Example usage:
 # images_to_video('path_to_image_folder', 'output_video.mp4', fps=30, duration=5)
-images_to_video("completed", 'morning.mp4', fps=30, duration=1)
+images_to_video("completed", 'morning2.mp4', fps=30, target_width=1920, target_height=1080)

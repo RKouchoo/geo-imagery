@@ -233,9 +233,10 @@ def doDownloadExtract(gzpath, datpath, files):
 
 
 def singleDownloadExtract(gzpath, datpath, gzf, retain=True):
-    thePath = gzpath+gzf[-47:]
+    gzName = gzf[-47:]
+    thePath = gzpath + gzName
 
-    datCheck = datpath + gzf[-47:].strip(".bz2")
+    datCheck = datpath + gzName.strip(".bz2")
     
     if Path(datCheck).is_file():
         print(f"File {datCheck} exists, skipping!")
@@ -254,7 +255,7 @@ def singleDownloadExtract(gzpath, datpath, gzf, retain=True):
     print("Wrote DAT file: {}".format(datpath + gzn))
 
     if not retain:
-        os.remove(thePath)
+        os.remove(thePath.strip(gzName))
 
     return newpath
 
