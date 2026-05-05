@@ -232,15 +232,17 @@ def doDownloadExtract(gzpath, datpath, files):
    return newpath
 
 
-def singleDownloadExtract(gzpath, datpath, gzf):
+def singleDownloadExtract(gzpath, datpath, gzf, retain=True):
+    thePath = gzpath+gzf[-47:]
 
-    check = Path(gzpath+gzf[-47:])
-    if check.is_file():
-        print(f"File {gzf} exists, skipping!")
+    datCheck = datpath + gzf[-47:].strip(".bz2")
+    
+    if Path(datCheck).is_file():
+        print(f"File {datCheck} exists, skipping!")
         return 0
 
     fs.download(gzf, gzpath+gzf[-47:])
-    thePath = gzpath+gzf[-47:]
+    
     print("Downloaded s3 raw: {}".format(gzf))
 
     gzFile = bz2.BZ2File(thePath)
@@ -250,6 +252,9 @@ def singleDownloadExtract(gzpath, datpath, gzf):
     open(datpath + gzn, "wb").write(gzData)
     newpath = datpath + gzn
     print("Wrote DAT file: {}".format(datpath + gzn))
+
+    if not retain:
+        os.remove(thePath)
 
     return newpath
 

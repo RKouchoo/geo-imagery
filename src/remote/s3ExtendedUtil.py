@@ -10,7 +10,6 @@ from sats import satTypeGeneric
 
 from . import dateCarrier 
 from . import queryStringBuilder
-
 from . import downloadManager
 
 # init s3
@@ -29,14 +28,8 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
     if satellite.IS_REAL == False:
         return 0
 
-
-    # lets get the URI
     parentQueryURI = queryStringBuilder.buildCustomS3QueryDayOnly(saTime, satellite, sector)
-
-    # get the dirs
     s3SubDirs = fs.ls(parentQueryURI.getQueryURI(), refresh=True)
-
-    # internal method to pass to threadpool
 
 
     # lets start iterating over each container
@@ -45,6 +38,7 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
 
         dates = [p for p in s3dir.split("/") if p.isdigit()]
         s3DateStamp = "".join(dates)
+
         gzPath = "{}/gz/{}/{}/".format(datapathdir, attribs.S3_SOURCE_PATH, s3DateStamp) 
         datPath = "{}/processed/{}/{}/".format(datapathdir, attribs.S3_SOURCE_PATH, s3DateStamp)
 
@@ -55,9 +49,8 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
         if not os.path.exists(datPath):
             os.makedirs(datPath)
 
-
         def threaddableDownload(file):
-            downloadManager.singleDownloadExtract(gzPath, datPath, file)
+            downloadManager.singleDownloadExtract(gzPath, datPath, file, retainGz)
 
 
         # 160 files, 16 threads, 10 files per thread
