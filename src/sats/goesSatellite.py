@@ -38,9 +38,9 @@ class satellite:
     IS_REAL = True
     
 
-# lets declare info about goes-18
+# lets declare info about goes-19
 class attrib:
-    S3_SOURCE_PATH = "noaa-goes18"
+    S3_SOURCE_PATH = "noaa-goes19"
     L1 = L1
     L2 = L2
     TIME_SCALE = [0, 10, 20, 30, 40, 50]

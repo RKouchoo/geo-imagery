@@ -11,7 +11,7 @@ import time
 
 
 himawariSat = satellites.HIMAWARI_9
-goesSat = satellites.GOES_18
+goesSat = satellites.GOES_19
 goesAttribs = goesSat.getAttributes()
 himAttribs = himawariSat.getAttributes()
 

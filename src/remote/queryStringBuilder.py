@@ -68,6 +68,7 @@ def buildCustomS3QueryDayOnly(qcarrier=dateCarrier.carrier(None, None, None, Non
 # automatically build a day query
 def buildDayQuery(sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK):
     std = buildLatestS3QueryURI(sat, sector)
+
     std.setQueryURI(std.getQueryURI()[:-4] + "/")
 
     return std

@@ -23,12 +23,11 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
     if satellite.IS_REAL == False:
         return 0
 
-
-    if parentQueryURI != "":
-        # good do nothing
-        0 - 0 
-    else:
-        parentQueryURI = queryStringBuilder.buildCustomS3QueryDayOnly(saTime, satellite, sector)
+    parentQueryURInew = queryStringBuilder.buildCustomS3QueryDayOnly(saTime, satellite, sector)
+    
+    if parentQueryURI == "":
+        parentQueryURI = parentQueryURInew
+        
 
     s3SubDirs = fs.ls(parentQueryURI.getQueryURI(), refresh=True)
 
