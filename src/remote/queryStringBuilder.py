@@ -70,11 +70,10 @@ def buildDayQuery(sat=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_D
     std = buildLatestS3QueryURI(sat, sector)
 
     path = std.getQueryURI()
-    index = path.rfind("/")
-    if index != -1:
-        result = path[:index]
-
-    std.setQueryURI(result)
+    result = path[:path.rfind('/')]
+    result2 = result[:result.rfind('/')]
+    print(result2)
+    std.setQueryURI(result2 + "/")
 
     return std
 
