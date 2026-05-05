@@ -15,10 +15,6 @@ from . import downloadManager
 # init s3
 fs = s3fs.S3FileSystem(anon=True)
 
-def splitArray(arr, namnt):
-    k, m = divmod(len(arr), namnt)
-    return (arr[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(namnt))
-
 
 def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False), satellite=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK, datapathdir="./data", retainGz=True):
 

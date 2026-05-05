@@ -1,33 +1,26 @@
+from email.mime import image
 from satpy import Scene, find_files_and_readers, MultiScene, DataQuery
 from satpy.composites.fill import BackgroundCompositor
 from satpy.utils import debug_on
 import dask
 
 from remote import downloadManager
-from sats import satellites
-from remote import queryStringBuilder
 
 import os
 from pathlib import Path
 import datetime
 from datetime import date, timedelta, timezone
 import shutil
-
-
-#debug_on()
-
+import warnings
+    
+warnings.filterwarnings('ignore', 'Mean of empty slice', category=RuntimeWarning)
+warnings.filterwarnings('ignore', 'invalid value encountered in divide', category=RuntimeWarning)
 
 # https://github.com/pytroll/satpy/blob/main/satpy/etc/readers/ahi_hsd.yaml
 # https://github.com/pytroll/satpy/blob/main/satpy/etc/composites/ahi.yaml
 
 def SubDirPath (d):
     return [f for f in d.iterdir() if f.is_dir()]
-
-def collectFromS3():
-    himawariSat = satellites.HIMAWARI_9
-    satribs = himawariSat.getAttributes()
-    URI = queryStringBuilder.getLatestS3QueryAvaliable(sat=himawariSat, product=satribs.L1, sector=satribs.L1.FULL_DISK) # type: ignore
-    downloadManager.getLatestDataFromS3(URI.getQueryURI(), saTime=URI, satellite=himawariSat) # type: ignore
 
 
 opts =  ['airmass', 'ash', 'cloud_phase_distinction', 'cloud_phase_distinction_raw',
@@ -45,11 +38,11 @@ opts =  ['airmass', 'ash', 'cloud_phase_distinction', 'cloud_phase_distinction_r
 
 chann = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16']
 
-#collectFromS3()
+
 dask.config.set(**{'array.slicing.split_large_chunks': False})
 
 #..\data\processed\noaa-himawari9\202602171430
-subdirs = SubDirPath(Path(r'../data/processed/noaa-himawari9'))
+subdirs = SubDirPath(Path(r'./data/processed/noaa-himawari9'))
 
 active_template = 'true_color_reproduction' # true_color
 
@@ -59,12 +52,18 @@ render1 = "true_color_reproduction_uncorr" #colorized_ir_clouds true_color_repro
 
 for datadir in subdirs:
     with dask.config.set({"array.chunk-size" : "512MiB"}):
+ 
+        imageName = f"{render1}.{str(datadir).strip("data/processed/noaa-himawari9/")}.png"
+
+        print(imageName)
 
         ahi_dataset_reader = find_files_and_readers(base_dir=datadir, reader="ahi_hsd")
         dataset_scene = Scene(reader="ahi_hsd", filenames=ahi_dataset_reader, reader_kwargs={'mask_space': False})
 
         dataset_scene.load([render1], generate=False)
-        resampled_dataset_scene = dataset_scene.resample(dataset_scene.coarsest_area(), cachedir="../cache3", resampler="native")
-        resampled_dataset_scene.save_datasets(dataset_id=render1, filename=f"{render1}.{datetime.datetime.now(timezone.utc)}.png", compute=True)
-
+        resampled_dataset_scene = dataset_scene.resample(dataset_scene.coarsest_area(), cachedir="./rendercache", resampler="native")
+       
+        resampled_dataset_scene.save_datasets(dataset_id=render1, filename=imageName, compute=True)
+        
+        shutil.move(imageName, "completed/")
         #os.popen("./dataset_clut_merge.sh")
