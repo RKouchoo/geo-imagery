@@ -1,9 +1,11 @@
 import bz2
+from genericpath import isfile
 import s3fs
 import os
 import time
 
 import urllib.request
+from pathlib import Path
 
 from sats import satellites
 from . import dateCarrier
@@ -231,6 +233,12 @@ def doDownloadExtract(gzpath, datpath, files):
 
 
 def singleDownloadExtract(gzpath, datpath, gzf):
+
+    check = Path(gzpath+gzf[-47:])
+    if check.is_file():
+        print(f"File {gzf} exists, skipping!")
+        return 0
+
     fs.download(gzf, gzpath+gzf[-47:])
     thePath = gzpath+gzf[-47:]
     print("Downloaded s3 raw: {}".format(gzf))

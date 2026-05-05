@@ -21,7 +21,7 @@ def splitArray(arr, namnt):
     return (arr[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(namnt))
 
 
-def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False), satellite=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK, datapathdir="../data", retainGz=True):
+def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False), satellite=satellites.GENERIC, sector=satTypeGeneric.attrib.L1.FULL_DISK, datapathdir="./data", retainGz=True):
 
     attribs = satellite.getAttributes()
 
@@ -29,15 +29,6 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
     if satellite.IS_REAL == False:
         return 0
 
-    gzPath = "{}/gz/{}/{}/".format(datapathdir[1], attribs.S3_SOURCE_PATH, saTime.getCompleteDateString()) 
-    datPath = "{}/processed/{}/{}/".format(datapathdir[0], attribs.S3_SOURCE_PATH, saTime.getCompleteDateString())
-
-    # lets create/check for a folder with the UNC name for the files
-    if not os.path.exists(gzPath):
-        os.makedirs(gzPath)
-
-    if not os.path.exists(datPath):
-        os.makedirs(datPath)
 
     # lets get the URI
     parentQueryURI = queryStringBuilder.buildCustomS3QueryDayOnly(saTime, satellite, sector)
@@ -45,15 +36,33 @@ def downloadS3BucketDay(saTime=dateCarrier.carrier(None, None, None, None, False
     # get the dirs
     s3SubDirs = fs.ls(parentQueryURI.getQueryURI(), refresh=True)
 
-    # internal method to wrap whats going on
-    def threaddableDownload(file):
-        downloadManager.singleDownloadExtract(gzPath, datPath, file)
+    # internal method to pass to threadpool
 
 
     # lets start iterating over each container
     for s3dir in s3SubDirs:
         files = fs.ls(s3dir, refresh=True)
 
-        # 160 files, 10 threads, 16 files per thread
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        dates = [p for p in s3dir.split("/") if p.isdigit()]
+        s3DateStamp = "".join(dates)
+        gzPath = "{}/gz/{}/{}/".format(datapathdir, attribs.S3_SOURCE_PATH, s3DateStamp) 
+        datPath = "{}/processed/{}/{}/".format(datapathdir, attribs.S3_SOURCE_PATH, s3DateStamp)
+
+        # lets create/check for a folder with the UNC name for the files
+        if not os.path.exists(gzPath):
+            os.makedirs(gzPath)
+
+        if not os.path.exists(datPath):
+            os.makedirs(datPath)
+
+
+        def threaddableDownload(file):
+            downloadManager.singleDownloadExtract(gzPath, datPath, file)
+
+
+        # 160 files, 16 threads, 10 files per thread
+        with ThreadPoolExecutor(max_workers=16) as executor:
             executor.map(threaddableDownload, files)
+
+        print(f"Downloaded {s3dir} moving to next dataset")
+        time.sleep(1)
