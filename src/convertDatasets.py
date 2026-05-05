@@ -42,28 +42,27 @@ chann = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B10', '
 dask.config.set(**{'array.slicing.split_large_chunks': False})
 
 #..\data\processed\noaa-himawari9\202602171430
-subdirs = SubDirPath(Path(r'./data/processed/noaa-himawari9'))
+datDirs = SubDirPath(Path(r'./data/processed/noaa-himawari9'))
+renderTemplate = "true_color_reproduction_uncorr" #colorized_ir_clouds true_color_reproduction_uncorr true_color_reproduction_corr
 
-active_template = 'true_color_reproduction' # true_color
 
-render1 = "true_color_reproduction_uncorr" #colorized_ir_clouds true_color_reproduction_uncorr true_color_reproduction_corr
-
-#print(f"{render1}.{datetime.datetime.timestamp(datetime.datetime.now())}.png")
-
-for datadir in subdirs:
+for datadir in datDirs:
     with dask.config.set({"array.chunk-size" : "512MiB"}):
  
-        imageName = f"{render1}.{str(datadir).strip("data/processed/noaa-himawari9/")}.png"
+        imageName = f"{renderTemplate}.{str(datadir).strip("data/processed/noaa-himawari9/")}.png"
 
-        print(imageName)
+        if Path("completed/" + imageName).is_file():
+            print(f"File {imageName} exists, skipping!")
+            continue
 
         ahi_dataset_reader = find_files_and_readers(base_dir=datadir, reader="ahi_hsd")
         dataset_scene = Scene(reader="ahi_hsd", filenames=ahi_dataset_reader, reader_kwargs={'mask_space': False})
 
-        dataset_scene.load([render1], generate=False)
+        dataset_scene.load([renderTemplate], generate=False)
         resampled_dataset_scene = dataset_scene.resample(dataset_scene.coarsest_area(), cachedir="./rendercache", resampler="native")
        
-        resampled_dataset_scene.save_datasets(dataset_id=render1, filename=imageName, compute=True)
-        
+        resampled_dataset_scene.save_datasets(dataset_id=renderTemplate, filename=imageName, compute=True)
+        print("Rendered :" + imageName)
+
         shutil.move(imageName, "completed/")
         #os.popen("./dataset_clut_merge.sh")
